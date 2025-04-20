@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JubiTiempo</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background-color: #d0e8f2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logo-container img {
+      height: 40px;
+      width: 40px;
+    }
+
+    .logo-text {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #003366;
+    }
+
+    .menu-links {
+      display: flex;
+      gap: 20px;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .menu-links a {
+      text-decoration: none;
+      color: #003366;
+      font-size: 1.2rem;
+    }
+
+    .hamburger {
+      display: none;
+      font-size: 1.5rem;
+      background: none;
+      border: none;
+      color: #003366;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .menu-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 60px;
+        left: 10px;
+        background-color: #d0e8f2;
+        padding: 10px;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      }
+
+      .menu-links.show {
+        display: flex;
+      }
+
+      .hamburger {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav role="navigation">
+    <div class="logo-container">
+      <button class="hamburger" onclick="toggleMenu()" aria-label="Menú de navegación">☰</button>
+      <img src="logo.png" alt="Logo" />
+      <span class="logo-text">JubiTiempo</span>
+    </div>
+    <div class="menu-links" id="menuLinks">
+      <a href="#calculo-aportes">Cálculo de años aportados</a>
+      <a href="#calculo-haber">Cálculo del haber jubilatorio</a>
+      <a href="#sobre-sitio">Sobre el sitio</a>
+    </div>
+  </nav>
+
+  <header style="background-color: #fff0f0; padding: 20px 30px; text-align: center; border-bottom: 1px solid #e0e0e0;">
+    <h1 style="margin: 0; font-size: 1.1rem; color: #990000;">
+      Los resultados ofrecidos por esta web son estimativos y no tienen validez legal. Para conocer tu situación previsional con exactitud, consultá en ANSES con turno presencial.
+    </h1>
+  </header>
+
+  <!-- SECCIÓN 1: Cálculo de años aportados -->
+  <section id="calculo-aportes" style="padding: 40px;">
+    <style>
+      .aportes-container {
+        max-width: 1000px;
+        margin: auto;
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        padding: 25px;
+        font-size: 1.1rem;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .form-group label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 8px;
+        font-size: 1rem;
+      }
+
+      .laboral-row {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+      }
+
+      .laboral-row input,
+      .laboral-row select {
+        flex: 1;
+        min-width: 150px;
+      }
+
+      .botones {
+        display: flex;
+        gap: 15px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+      }
+
+      .botones button {
+        background-color: #007acc;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 6px;
+        font-size: 1rem;
+        cursor: pointer;
+      }
+
+      #tareas-cuidado {
+        display: none;
+        padding: 15px;
+        background: #f2f8ff;
+        border: 1px solid #cce0f5;
+        border-radius: 8px;
+        margin-top: 10px;
+      }
+
+      input[type="file"] {
+        display: none;
+      }
+
+      #resultado-calculo {
+        margin-top: 30px;
+        padding: 20px;
+        border-radius: 10px;
+        background: #f0f4f8;
+        border-left: 6px solid #007acc;
+        font-size: 1.1rem;
+        display: none;
+      }
+    </style>
+
+    <div class="aportes-container">
+      <h2>Cálculo de años aportados</h2>
+
+      <div class="form-group">
+        <label for="sexo">Sexo:</label>
+        <select id="sexo" onchange="mostrarTareasCuidado()">
+          <option value="">Seleccionar</option>
+          <option value="masculino">Masculino</option>
+          <option value="femenino">Femenino</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="nacimiento">Año de nacimiento:</label>
+        <input type="number" id="nacimiento" min="1900" max="2100" />
+      </div>
+
+      <div id="tareas-cuidado">
+        <div class="form-group">
+          <label for="hijos">Cantidad de hijos/as nacidos vivos:</label>
+          <input type="number" id="hijos" min="0" />
+        </div>
+        <div class="form-group">
+          <label for="hijos-discapacitados">Cantidad de hijos/as con discapacidad:</label>
+          <input type="number" id="hijos-discapacitados" min="0" />
+        </div>
+        <div class="form-group">
+          <label for="hijos-adoptados">Cantidad de hijos/as adoptados/as:</label>
+          <input type="number" id="hijos-adoptados" min="0" />
+        </div>
+        <div class="form-group">
+          <label for="auh">¿Cobrás AUH por al menos 12 meses? (cantidad de hijos):</label>
+          <input type="number" id="auh" min="0" />
+        </div>
+      </div>
+
+      <div id="historial-laboral">
+        <label style="font-weight: bold; margin-top: 15px;">Historial laboral:</label>
+        <div class="laboral-row">
+          <input type="text" placeholder="Razón social" />
+          <input type="month" />
+          <input type="month" />
+          <select>
+            <option value="dependencia">Relación de dependencia</option>
+            <option value="autonomo">Autónomo</option>
+            <option value="monotributo">Monotributo</option>
+            <option value="docente">Docente</option>
+            <option value="servicio_domestico">Servicio doméstico</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="botones">
+        <button onclick="agregarFila()">+ Agregar línea</button>
+        <button onclick="document.getElementById('fileInput').click()">Adjuntar PDF obtenido de Anses</button>
+        <input type="file" id="fileInput" accept="application/pdf" onchange="leerPDF(this.files[0])" />
+        <button onclick="calcularJubilacion()">Calcular situación previsional</button>
+      </div>
+
+      <div id="resultado-calculo"></div>
+    </div>
+
+    <!-- Aquí luego vendrá el <script> para Sección 1 -->
+
+  </section>
+
+<!-- Scripts para Sección 1 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+<script>
+  function toggleMenu() {
+    const menu = document.getElementById("menuLinks");
+    menu.classList.toggle("show");
+  }
+
+  function mostrarTareasCuidado() {
+    const sexo = document.getElementById("sexo").value;
+    document.getElementById("tareas-cuidado").style.display = sexo === "femenino" ? "block" : "none";
+  }
+
+  function agregarFila() {
+    const container = document.getElementById("historial-laboral");
+    const nuevaFila = document.createElement("div");
+    nuevaFila.className = "laboral-row";
+    nuevaFila.innerHTML = `
+      <input type="text" placeholder="Razón social" />
+      <input type="month" />
+      <input type="month" />
+      <select>
+        <option value="dependencia">Relación de dependencia</option>
+        <option value="autonomo">Autónomo</option>
+        <option value="monotributo">Monotributo</option>
+        <option value="docente">Docente</option>
+        <option value="servicio_domestico">Servicio doméstico</option>
+      </select>`;
+    container.appendChild(nuevaFila);
+  }
+
+  async function leerPDF(file) {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+    let texto = "";
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      texto += content.items.map(i => i.str).join(" ") + "\n";
+    }
+
+    const regex = /([A-Z\s]{3,})\s+\d{11}\s+(\d{2}\/\d{4})-(\d{2}\/\d{4})/g;
+    const container = document.getElementById("historial-laboral");
+    container.innerHTML = "";
+    let match;
+    while ((match = regex.exec(texto)) !== null) {
+      const razon = match[1].trim();
+      const desde = match[2];
+      const hasta = match[3];
+      const fila = document.createElement("div");
+      fila.className = "laboral-row";
+      fila.innerHTML = `
+        <input type="text" value="${razon}" />
+        <input type="month" value="${formatearMes(desde)}" />
+        <input type="month" value="${formatearMes(hasta)}" />
+        <select>
+          <option value="dependencia" selected>Relación de dependencia</option>
+          <option value="autonomo">Autónomo</option>
+          <option value="monotributo">Monotributo</option>
+          <option value="docente">Docente</option>
+          <option value="servicio_domestico">Servicio doméstico</option>
+        </select>`;
+      container.appendChild(fila);
+    }
+  }
+
+  function formatearMes(str) {
+    const [mes, anio] = str.split("/");
+    return `${anio}-${mes.padStart(2, "0")}`;
+  }
+
+  function calcularJubilacion() {
+    const sexo = document.getElementById("sexo").value;
+    const nacimiento = parseInt(document.getElementById("nacimiento").value);
+    if (!sexo || !nacimiento) return alert("Completá sexo y año de nacimiento.");
+
+    const edad = new Date().getFullYear() - nacimiento;
+    const edadJubilatoria = sexo === "femenino" ? 60 : 65;
+
+    const filas = document.querySelectorAll("#historial-laboral .laboral-row");
+    const periodos = {
+      dependencia: [], autonomo: [], monotributo: [], docente: [], servicio_domestico: []
+    };
+
+    filas.forEach(fila => {
+      const desde = fila.querySelectorAll("input")[1].value;
+      const hasta = fila.querySelectorAll("input")[2].value;
+      const regimen = fila.querySelector("select").value;
+      if (desde && hasta && regimen) {
+        const d = new Date(desde);
+        const h = new Date(hasta);
+        if (d <= h) periodos[regimen].push({ desde: d, hasta: h });
+      }
+    });
+
+    let totalMeses = 0;
+    const resumen = {};
+    for (const [reg, per] of Object.entries(periodos)) {
+      const fusionados = fusionar(per);
+      const meses = fusionados.reduce((acc, p) => acc + contarMeses(p.desde, p.hasta), 0);
+      if (meses > 0) resumen[reg] = meses;
+      totalMeses += meses;
+    }
+
+    if (sexo === "femenino") {
+      const hijos = +document.getElementById("hijos").value || 0;
+      const disc = +document.getElementById("hijos-discapacitados").value || 0;
+      const adopt = +document.getElementById("hijos-adoptados").value || 0;
+      const auh = +document.getElementById("auh").value || 0;
+      const extra = hijos * 12 + disc * 12 + adopt * 24 + auh * 24;
+      if (extra > 0) resumen["tareas de cuidado"] = extra;
+      totalMeses += extra;
+    }
+
+    const totalAnios = Math.floor(totalMeses / 12);
+    window.totalAniosAportados = totalAnios;
+
+    let mensaje = `<strong>Edad actual:</strong> ${edad} años<br><br><strong>Aportes por régimen:</strong><br>`;
+    for (const [r, m] of Object.entries(resumen)) {
+      mensaje += `• ${traducir(r)}: ${Math.floor(m / 12)} año(s)<br>`;
+    }
+
+    mensaje += `<br><strong>Total combinado:</strong> ${totalAnios} año(s)<br><br>`;
+    if (edad >= edadJubilatoria && totalAnios >= 30) {
+      mensaje += `<span style="color: green; font-weight: bold;">¡Podés iniciar tu trámite jubilatorio!</span>`;
+    } else if (edad >= edadJubilatoria && totalAnios < 30) {
+      mensaje += `<span style="color: orange; font-weight: bold;">Ya tenés la edad, pero te faltan ${30 - totalAnios} año(s) de aportes.</span>`;
+    } else if (edad < edadJubilatoria && totalAnios >= 30) {
+      mensaje += `<span style="color: blue; font-weight: bold;">Ya tenés los aportes. Cumplís la edad jubilatoria en ${nacimiento + edadJubilatoria}.</span>`;
+    } else {
+      mensaje += `<span style="color: red; font-weight: bold;">Te faltan ${30 - totalAnios} año(s) de aportes y ${edadJubilatoria - edad} año(s) de edad.</span>`;
+    }
+
+    const resultado = document.getElementById("resultado-calculo");
+    resultado.innerHTML = mensaje;
+    resultado.style.display = "block";
+  }
+
+  function contarMeses(d, h) {
+    return (h.getFullYear() - d.getFullYear()) * 12 + (h.getMonth() - d.getMonth()) + 1;
+  }
+
+  function fusionar(periodos) {
+    periodos.sort((a, b) => a.desde - b.desde);
+    const fusionados = [];
+    periodos.forEach(p => {
+      if (!fusionados.length || p.desde > fusionados[fusionados.length - 1].hasta) {
+        fusionados.push({ ...p });
+      } else {
+        const ult = fusionados[fusionados.length - 1];
+        ult.hasta = new Date(Math.max(ult.hasta, p.hasta));
+      }
+    });
+    return fusionados;
+  }
+
+  function traducir(regimen) {
+    const map = {
+      dependencia: "Relación de dependencia",
+      autonomo: "Autónomo",
+      monotributo: "Monotributo",
+      docente: "Docente",
+      servicio_domestico: "Servicio doméstico",
+      "tareas de cuidado": "Tareas de cuidado"
+    };
+    return map[regimen] || regimen;
+  }
+</script>
+
+<!-- SECCIÓN 2: Cálculo del haber jubilatorio -->
+<section id="calculo-haber" style="padding: 40px;">
+  <style>
+    .haber-container {
+      max-width: 1000px;
+      margin: auto;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 25px;
+      font-size: 1.1rem;
+    }
+
+    .haber-container h2 {
+      color: #003366;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 8px;
+      font-size: 1rem;
+    }
+
+    .botones {
+      margin-top: 20px;
+    }
+
+    .botones button {
+      background-color: #007acc;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    #resultado-haber {
+      margin-top: 30px;
+      padding: 20px;
+      border-radius: 10px;
+      background: #f0f4f8;
+      border-left: 6px solid #007acc;
+      font-size: 1.1rem;
+      display: none;
+    }
+
+    #aniosManual {
+      display: none;
+      margin-top: 10px;
+    }
+
+    #aniosManual input {
+      width: 100%;
+    }
+  </style>
+
+  <div class="haber-container">
+    <h2>Cálculo del haber jubilatorio</h2>
+
+    <div class="form-group">
+      <label for="sueldoPromedio">Promedio de sueldo (últimos 10 años, sin aguinaldo):</label>
+      <input type="number" id="sueldoPromedio" placeholder="Ej: 250000" />
+    </div>
+
+    <div class="form-group">
+      <label for="baseFija">Monto base actual:</label>
+      <input type="number" id="baseFija" placeholder="Por defecto: 1170.23" />
+    </div>
+
+    <div class="form-group" id="aniosManual">
+      <label for="aniosIngresados">Años de aportes (si no usaste la sección anterior):</label>
+      <input type="number" id="aniosIngresados" placeholder="Ej: 28" />
+    </div>
+
+    <div class="botones">
+      <button onclick="calcularHaber()">Calcular haber estimado</button>
+    </div>
+
+    <div id="resultado-haber"></div>
+  </div>
+
+  <script>
+    function calcularHaber() {
+      const promedio = parseFloat(document.getElementById("sueldoPromedio").value);
+      const base = parseFloat(document.getElementById("baseFija").value) || 1170.23;
+      let totalAnios = window.totalAniosAportados || null;
+
+      if (!promedio) {
+        alert("Por favor ingresá tu sueldo promedio.");
+        return;
+      }
+
+      if (!totalAnios) {
+        document.getElementById("aniosManual").style.display = "block";
+        const manual = parseInt(document.getElementById("aniosIngresados").value);
+        if (!manual || manual < 1) {
+          alert("Por favor ingresá tus años de aportes.");
+          return;
+        }
+        totalAnios = manual;
+      }
+
+      const extra = Math.max(0, totalAnios - 30);
+      const adicional = promedio * 0.01 * extra;
+      const haber = base + adicional;
+
+      document.getElementById("resultado-haber").style.display = "block";
+      document.getElementById("resultado-haber").innerHTML = `
+        <strong>Estimación:</strong><br>
+        Años aportados: ${totalAnios}<br>
+        Porcentaje adicional: ${extra}%<br><br>
+        <strong>Haber estimado:</strong> $${haber.toFixed(2)}<br><br>
+        <em style="font-size: 0.95rem; color: #666;">Este cálculo es orientativo. El monto real puede variar según normativa vigente.</em>
+      `;
+    }
+  </script>
+</section>
+
+<!-- SECCIÓN: Sobre el sitio -->
+<section id="sobre-sitio" style="padding: 40px;">
+  <style>
+    .sobre-container {
+      max-width: 1000px;
+      margin: auto;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 30px;
+      font-size: 1.15rem;
+      line-height: 1.6;
+    }
+
+    .sobre-container h2 {
+      color: #003366;
+      margin-bottom: 20px;
+      font-size: 1.6rem;
+    }
+
+    .sobre-container p {
+      color: #333;
+    }
+  </style>
+
+  <div class="sobre-container">
+    <h2>Sobre el sitio</h2>
+    <p>
+      La web del Anses actualmente no dispone de un sistema que proporcione al usuario información respecto a cuántos años de aportes tiene pendientes o cuántos años le faltan para alcanzar la edad jubilatoria.
+    </p>
+    <p>
+      Es por esta razón que nace <strong>JubiTiempo</strong>: un desarrollo independiente que se nutre de la información que ofrece el Anses mediante la descarga del historial laboral, permitiendo al usuario conocer de forma anticipada y clara su situación previsional.
+    </p>
+    <p>
+      Esta herramienta no reemplaza la consulta oficial ni tiene carácter legal, pero sí brinda una orientación realista y personalizada basada en los datos concretos del usuario.
+    </p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background-color: #d0e8f2; padding: 30px 20px; text-align: center; font-size: 1rem; color: #003366; margin-top: 40px;">
+  <p><strong>Sergio Sainz</strong></p>
+  <p>Contacto: <a href="mailto:sergiosainz.proyectos@gmail.com" style="color: #003366; text-decoration: underline;">sergiosainz.proyectos@gmail.com</a></p>
+  <p>Donaciones (alias): <strong>sergiosainz.mp</strong></p>
+  <p><a href="#sobre-sitio" style="color: #003366; font-weight: bold; text-decoration: none;">Sobre el sitio</a></p>
+</footer>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const links = document.querySelectorAll(".menu-links a");
+    links.forEach(link => {
+      link.addEventListener("click", () => {
+        const menu = document.getElementById("menuLinks");
+        if (menu.classList.contains("show")) {
+          menu.classList.remove("show");
+        }
+      });
+    });
+  });
+</script>
+
+</body>
+</html>
