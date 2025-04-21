@@ -500,32 +500,38 @@
     <div class="form-group">
       <label for="sueldoPromedio">Promedio salarial (últimos 10 años sin aguinaldo):</label>
       <input type="number" id="sueldoPromedio" placeholder="Ej: 250000" />
-      <small>Ingresá tu sueldo mensual promedio durante los últimos 10 años. No incluye aguinaldo. Se utiliza como base para el cálculo del haber.</small>
+      <small>Ingresá tu sueldo mensual promedio durante los últimos 10 años. No incluye aguinaldo.</small>
     </div>
 
     <div class="form-group">
       <label for="baseFija">Monto base actual (editable):</label>
       <input type="number" id="baseFija" value="1170.23" />
-      <small>Este monto lo establece ANSES. Se suma al haber como componente fijo. Podés editarlo si conocés un valor actualizado.</small>
+      <small>Monto fijo histórico que se suma al haber. Podés modificarlo si hay un valor actualizado oficial.</small>
     </div>
 
     <div class="form-group">
       <label for="haberMinimo">Haber mínimo vigente:</label>
-      <input type="number" id="haberMinimo" value="17100" />
-      <small>Valor mínimo garantizado por ANSES. El sistema te alertará si tu estimación queda por debajo.</small>
+      <input type="number" id="haberMinimo" value="171216.03" />
+      <small>Valor garantizado por ANSES. Se usa para alertarte si tu haber estimado es menor.</small>
     </div>
 
     <div class="form-group">
       <label for="haberMaximo">Tope máximo jubilatorio:</label>
-      <input type="number" id="haberMaximo" value="500000" />
-      <small>Límite superior del haber previsional según normativa. Se mostrará una advertencia si lo superás.</small>
+      <input type="number" id="haberMaximo" value="1152574.47" />
+      <small>Tope establecido por ANSES. Si el haber supera este valor, se aplican limitaciones.</small>
     </div>
 
     <div class="form-group" id="aniosManual">
       <label for="aniosIngresados">Años de aportes (si no usaste la sección anterior):</label>
       <input type="number" id="aniosIngresados" placeholder="Ej: 28" />
-      <small>Ingresá tus años totales de aportes si no los calculaste previamente. Necesario para estimar correctamente tu haber.</small>
+      <small>Ingresá tus años totales de aportes si no los calculaste anteriormente.</small>
     </div>
+
+    <p style="font-size: 0.95rem; color: #003366; margin-top: 10px;">
+      <a href="https://www.anses.gob.ar/jubilaciones-y-pensiones" target="_blank" style="color: #003366; text-decoration: underline;">
+        Consultá en ANSES los valores actualizados del haber jubilatorio
+      </a>
+    </p>
 
     <div class="botones">
       <button onclick="calcularHaber()">Calcular haber estimado</button>
@@ -578,7 +584,7 @@
         <b>Años registrados de aportes:</b> ${totalAnios} año(s)<br>
         <b>Promedio salarial:</b> $${promedio.toLocaleString("es-AR")}<br>
         <b>Base previsional:</b> $${base.toFixed(2)}<br>
-        <b>Años excedentes (sobre 30):</b> ${extra} año(s) → +${(extra)}%<br><br>
+        <b>Años excedentes (sobre 30):</b> ${extra} año(s) → +${extra}%<br><br>
 
         <b>Estimación del haber mensual:</b><br>
         <mark style="background-color: #dff0d8; padding: 5px; border-radius: 4px; display: inline-block; font-size: 1.2rem; font-weight: bold;">
@@ -587,7 +593,7 @@
         ${mensajeExtra}<br><br>
 
         <em style="font-size: 0.9rem; color: #555;">
-          Este cálculo es orientativo. La cifra real puede variar según normativa vigente, actualizaciones trimestrales, y ajustes individuales realizados por ANSES.
+          Este cálculo es orientativo. El valor real puede variar según normativa vigente, ajustes trimestrales y análisis personalizado de ANSES.
         </em>
       `;
     }
