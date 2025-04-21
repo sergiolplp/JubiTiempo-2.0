@@ -423,7 +423,7 @@
   }
 </script>
 
-<!-- SECCIÓN 2: Cálculo del haber jubilatorio -->
+<!-- SECCIÓN: Cálculo del haber jubilatorio -->
 <section id="calculo-haber" style="padding: 40px;">
   <style>
     .haber-container {
@@ -432,7 +432,7 @@
       background: #ffffff;
       border-radius: 12px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      padding: 25px;
+      padding: 20px;
       font-size: 1.1rem;
     }
 
@@ -442,7 +442,7 @@
     }
 
     .form-group {
-      margin-bottom: 15px;
+      margin-bottom: 20px;
     }
 
     .form-group label {
@@ -455,6 +455,13 @@
       width: 100%;
       padding: 8px;
       font-size: 1rem;
+    }
+
+    .form-group small {
+      display: block;
+      margin-top: 5px;
+      color: #555;
+      font-size: 0.95rem;
     }
 
     .botones {
@@ -485,28 +492,39 @@
       display: none;
       margin-top: 10px;
     }
-
-    #aniosManual input {
-      width: 100%;
-    }
   </style>
 
   <div class="haber-container">
     <h2>Cálculo del haber jubilatorio</h2>
 
     <div class="form-group">
-      <label for="sueldoPromedio">Promedio de sueldo (últimos 10 años, sin aguinaldo):</label>
+      <label for="sueldoPromedio">Promedio salarial (últimos 10 años sin aguinaldo):</label>
       <input type="number" id="sueldoPromedio" placeholder="Ej: 250000" />
+      <small>Ingresá tu sueldo mensual promedio durante los últimos 10 años. No incluye aguinaldo. Se utiliza como base para el cálculo del haber.</small>
     </div>
 
     <div class="form-group">
-      <label for="baseFija">Monto base actual:</label>
-      <input type="number" id="baseFija" placeholder="Por defecto: 1170.23" />
+      <label for="baseFija">Monto base actual (editable):</label>
+      <input type="number" id="baseFija" value="1170.23" />
+      <small>Este monto lo establece ANSES. Se suma al haber como componente fijo. Podés editarlo si conocés un valor actualizado.</small>
+    </div>
+
+    <div class="form-group">
+      <label for="haberMinimo">Haber mínimo vigente:</label>
+      <input type="number" id="haberMinimo" value="17100" />
+      <small>Valor mínimo garantizado por ANSES. El sistema te alertará si tu estimación queda por debajo.</small>
+    </div>
+
+    <div class="form-group">
+      <label for="haberMaximo">Tope máximo jubilatorio:</label>
+      <input type="number" id="haberMaximo" value="500000" />
+      <small>Límite superior del haber previsional según normativa. Se mostrará una advertencia si lo superás.</small>
     </div>
 
     <div class="form-group" id="aniosManual">
       <label for="aniosIngresados">Años de aportes (si no usaste la sección anterior):</label>
       <input type="number" id="aniosIngresados" placeholder="Ej: 28" />
+      <small>Ingresá tus años totales de aportes si no los calculaste previamente. Necesario para estimar correctamente tu haber.</small>
     </div>
 
     <div class="botones">
@@ -520,6 +538,8 @@
     function calcularHaber() {
       const promedio = parseFloat(document.getElementById("sueldoPromedio").value);
       const base = parseFloat(document.getElementById("baseFija").value) || 1170.23;
+      const haberMin = parseFloat(document.getElementById("haberMinimo").value);
+      const haberMax = parseFloat(document.getElementById("haberMaximo").value);
       let totalAnios = window.totalAniosAportados || null;
 
       if (!promedio) {
@@ -539,15 +559,36 @@
 
       const extra = Math.max(0, totalAnios - 30);
       const adicional = promedio * 0.01 * extra;
-      const haber = base + adicional;
+      let haber = base + adicional;
+      let mensajeExtra = "";
 
-      document.getElementById("resultado-haber").style.display = "block";
-      document.getElementById("resultado-haber").innerHTML = `
-        <strong>Estimación:</strong><br>
-        Años aportados: ${totalAnios}<br>
-        Porcentaje adicional: ${extra}%<br><br>
-        <strong>Haber estimado:</strong> $${haber.toFixed(2)}<br><br>
-        <em style="font-size: 0.95rem; color: #666;">Este cálculo es orientativo. El monto real puede variar según normativa vigente.</em>
+      if (haber < haberMin) {
+        mensajeExtra += `<br><span style="color: orange;">* El haber calculado está por debajo del haber mínimo vigente ($${haberMin.toLocaleString("es-AR")}).</span>`;
+      }
+
+      if (haber > haberMax) {
+        mensajeExtra += `<br><span style="color: orange;">* El haber supera el tope máximo establecido por ANSES ($${haberMax.toLocaleString("es-AR")}).</span>`;
+      }
+
+      const resultado = document.getElementById("resultado-haber");
+      resultado.style.display = "block";
+      resultado.innerHTML = `
+        <strong>Resultado detallado:</strong><br><br>
+
+        <b>Años registrados de aportes:</b> ${totalAnios} año(s)<br>
+        <b>Promedio salarial:</b> $${promedio.toLocaleString("es-AR")}<br>
+        <b>Base previsional:</b> $${base.toFixed(2)}<br>
+        <b>Años excedentes (sobre 30):</b> ${extra} año(s) → +${(extra)}%<br><br>
+
+        <b>Estimación del haber mensual:</b><br>
+        <mark style="background-color: #dff0d8; padding: 5px; border-radius: 4px; display: inline-block; font-size: 1.2rem; font-weight: bold;">
+          $${haber.toFixed(2).toLocaleString("es-AR")}
+        </mark>
+        ${mensajeExtra}<br><br>
+
+        <em style="font-size: 0.9rem; color: #555;">
+          Este cálculo es orientativo. La cifra real puede variar según normativa vigente, actualizaciones trimestrales, y ajustes individuales realizados por ANSES.
+        </em>
       `;
     }
   </script>
