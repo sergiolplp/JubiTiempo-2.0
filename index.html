@@ -505,20 +505,20 @@
 
     <div class="form-group">
       <label for="baseFija">Monto base actual (editable):</label>
-      <input type="number" id="baseFija" value="1170.23" />
-      <small>Monto fijo histórico que se suma al haber. Podés modificarlo si hay un valor actualizado oficial.</small>
+      <input type="number" id="baseFija" value="130749.89" />
+      <small>PBU abril 2025: $130.749,89. Este valor es editable si hay cambios oficiales.</small>
     </div>
 
     <div class="form-group">
       <label for="haberMinimo">Haber mínimo vigente:</label>
-      <input type="number" id="haberMinimo" value="171216.03" />
-      <small>Valor garantizado por ANSES. Se usa para alertarte si tu haber estimado es menor.</small>
+      <input type="number" id="haberMinimo" value="285820.63" />
+      <small>Haber mínimo ANSES desde abril 2025.</small>
     </div>
 
     <div class="form-group">
       <label for="haberMaximo">Tope máximo jubilatorio:</label>
-      <input type="number" id="haberMaximo" value="1152574.47" />
-      <small>Tope establecido por ANSES. Si el haber supera este valor, se aplican limitaciones.</small>
+      <input type="number" id="haberMaximo" value="1923302.29" />
+      <small>Haber máximo ANSES desde abril 2025.</small>
     </div>
 
     <div class="form-group" id="aniosManual">
@@ -543,7 +543,7 @@
   <script>
     function calcularHaber() {
       const promedio = parseFloat(document.getElementById("sueldoPromedio").value);
-      const base = parseFloat(document.getElementById("baseFija").value) || 1170.23;
+      const base = parseFloat(document.getElementById("baseFija").value);
       const haberMin = parseFloat(document.getElementById("haberMinimo").value);
       const haberMax = parseFloat(document.getElementById("haberMaximo").value);
       let totalAnios = window.totalAniosAportados || null;
@@ -583,7 +583,7 @@
 
         <b>Años registrados de aportes:</b> ${totalAnios} año(s)<br>
         <b>Promedio salarial:</b> $${promedio.toLocaleString("es-AR")}<br>
-        <b>Base previsional:</b> $${base.toFixed(2)}<br>
+        <b>Base previsional:</b> $${base.toLocaleString("es-AR")}<br>
         <b>Años excedentes (sobre 30):</b> ${extra} año(s) → +${extra}%<br><br>
 
         <b>Estimación del haber mensual:</b><br>
